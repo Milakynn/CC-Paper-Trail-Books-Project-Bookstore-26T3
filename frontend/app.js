@@ -11,19 +11,36 @@ if (loginForm) {
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
-    registerForm.addEventListener("submit", function(event) {
+
+    registerForm.addEventListener("submit", async function(event) {
+
         event.preventDefault();
 
+        const fullName = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
 
-        if (password !== confirmPassword) {
-            alert("Passwords do not match.");
-            return;
-        }
+        const response = await fetch(
+            "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    full_name: fullName,
+                    email: email,
+                    password: password
+                })
+            }
+        );
 
-        alert("Registration successful! Database connection will be added later.");
+        const data = await response.json();
+
+        alert(data.message);
+
     });
+
 }
 
 const searchInput = document.getElementById("searchInput");
