@@ -1,6 +1,7 @@
 import mysql.connector
 from flask_cors import CORS
 from flask import Flask, jsonify, request
+from flask import make_response
 
 app = Flask(__name__)
 
@@ -39,8 +40,15 @@ def get_books():
 
     return jsonify(books)
 
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["POST", "OPTIONS"])
 def register():
+
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        response.headers.add("Access-Control-Allow-Methods", "POST")
+        return response
 
     data = request.get_json()
 
@@ -49,7 +57,6 @@ def register():
     password = data["password"]
 
     connection = get_db_connection()
-
     cursor = connection.cursor()
 
     sql = """

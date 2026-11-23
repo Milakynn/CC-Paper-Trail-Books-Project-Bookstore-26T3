@@ -16,28 +16,42 @@ if (registerForm) {
 
         event.preventDefault();
 
-        const fullName = document.getElementById("fullName").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+        try {
 
-        const response = await fetch(
-            "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/register",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    full_name: fullName,
-                    email: email,
-                    password: password
-                })
-            }
-        );
+            const fullName = document.getElementById("fullName").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
-        const data = await response.json();
+            console.log("Submitting registration...");
 
-        alert(data.message);
+            const response = await fetch(
+                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            console.log(response);
+
+            const data = await response.json();
+
+            alert(data.message);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Registration failed. Check console.");
+
+        }
 
     });
 
