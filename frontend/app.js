@@ -25,7 +25,7 @@ if (registerForm) {
             console.log("Submitting registration...");
 
             const response = await fetch(
-                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev",
+                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/register",
                 {
                     method: "POST",
                     headers: {
