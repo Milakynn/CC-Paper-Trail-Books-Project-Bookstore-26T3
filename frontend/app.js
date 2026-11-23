@@ -231,3 +231,125 @@ if (profilePage) {
     }
 
 }
+
+const booksContainer =
+    document.getElementById("booksContainer");
+
+if (booksContainer) {
+
+    fetch(
+        "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/books"
+    )
+
+    .then(response => response.json())
+
+    .then(books => {
+
+        booksContainer.innerHTML = "";
+
+        books.forEach(book => {
+
+            booksContainer.innerHTML += `
+                <div class="book-card">
+                    <h3>${book.title}</h3>
+
+                    <p>
+                        Author:
+                        ${book.author}
+                    </p>
+
+                    <p>
+                        Category:
+                        ${book.category}
+                    </p>
+
+                    <p>
+                        $${book.price}
+                    </p>
+
+                    <button
+                        onclick="addToCart(${book.book_id})">
+                        Add to Cart
+                    </button>
+                </div>
+            `;
+
+        });
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+    });
+
+}
+
+const addBookForm =
+    document.getElementById("addBookForm");
+
+if (addBookForm) {
+
+    addBookForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const title =
+                document.getElementById("title").value;
+
+            const author =
+                document.getElementById("author").value;
+
+            const category =
+                document.getElementById("category").value;
+
+            const price =
+                document.getElementById("price").value;
+
+            const response = await fetch(
+                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/add-book",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        title,
+                        author,
+                        category,
+                        price
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            alert(data.message);
+
+        }
+    );
+
+}
+
+const adminPage =
+    document.getElementById("adminPage");
+
+if (adminPage) {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("loggedInUser")
+        );
+
+    if (!user || user.role !== "admin") {
+
+        alert("Admin access only.");
+
+        window.location.href = "index.html";
+
+    }
+
+}

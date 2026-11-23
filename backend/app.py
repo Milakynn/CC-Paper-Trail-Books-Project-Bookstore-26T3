@@ -113,5 +113,38 @@ def login():
         "message": "Invalid email or password"
     }), 401
 
+@app.route("/add-book", methods=["POST"])
+def add_book():
+
+    data = request.get_json()
+
+    title = data["title"]
+    author = data["author"]
+    category = data["category"]
+    price = data["price"]
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    sql = """
+    INSERT INTO books
+    (title, author, category, price, stock_quantity)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+
+    cursor.execute(
+        sql,
+        (title, author, category, price, 10)
+    )
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify({
+        "message": "Book added successfully"
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)
