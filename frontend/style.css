@@ -305,6 +305,21 @@ nav a:hover {
     color: white;
 }
 
+/* this is for the logout button in profile.html */
+#logoutBtn {
+    margin-left: 10px;
+    padding: 12px 20px;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#logoutBtn:hover {
+    background-color: #b91c1c;
+}
+
 footer {
     text-align: center;
     padding: 1rem;

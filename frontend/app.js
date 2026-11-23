@@ -1,11 +1,59 @@
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
+
+    loginForm.addEventListener("submit", async function(event) {
+
         event.preventDefault();
 
-        alert("Login feature will be connected to the database later.");
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+
+            const response = await fetch(
+                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                localStorage.setItem(
+                    "loggedInUser",
+                    JSON.stringify(data.user)
+                );
+
+                alert("Login successful!");
+
+                window.location.href = "profile.html";
+
+            } else {
+
+                alert(data.message);
+
+            }
+
+        } catch(error) {
+
+            console.error(error);
+
+            alert("Login failed.");
+
+        }
+
     });
+
 }
 
 const registerForm = document.getElementById("registerForm");
@@ -43,7 +91,18 @@ if (registerForm) {
 
             const data = await response.json();
 
+            localStorage.setItem(
+                "loggedInUser",
+                JSON.stringify({
+                    full_name: fullName,
+                    email: email,
+                    role: "customer"
+                })
+            );
+
             alert(data.message);
+
+            window.location.href = "profile.html";
 
         } catch (error) {
 
@@ -113,4 +172,62 @@ if (addBookBtn) {
     addBookBtn.addEventListener("click", () => {
         alert("Add Book functionality will be connected later.");
     });
+}
+
+const profileName = document.getElementById("profileName");
+
+if (profileName) {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("loggedInUser")
+        );
+
+    if (user) {
+
+        document.getElementById("profileName").textContent =
+            user.full_name;
+
+        document.getElementById("profileEmail").textContent =
+            user.email;
+
+        document.getElementById("profileRole").textContent =
+            user.role;
+
+    }
+
+}
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", () => {
+
+        localStorage.removeItem("loggedInUser");
+
+        alert("Logged out successfully");
+
+        window.location.href = "login.html";
+
+    });
+
+}
+
+const profilePage = document.getElementById("profileName");
+
+if (profilePage) {
+
+    const user = JSON.parse(
+        localStorage.getItem("loggedInUser")
+    );
+
+    if (!user) {
+
+        alert("Please login first.");
+
+        window.location.href = "login.html";
+
+    }
+
 }

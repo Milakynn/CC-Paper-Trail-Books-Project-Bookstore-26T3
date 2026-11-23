@@ -78,5 +78,40 @@ def register():
         "message": "User registered successfully"
     })
 
+@app.route("/login", methods=["POST"])
+def login():
+
+    data = request.get_json()
+
+    email = data["email"]
+    password = data["password"]
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    sql = """
+    SELECT * FROM users
+    WHERE email = %s AND password = %s
+    """
+
+    cursor.execute(sql, (email, password))
+
+    user = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    if user:
+        return jsonify({
+            "success": True,
+            "message": "Login successful",
+            "user": user
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Invalid email or password"
+    }), 401
+
 if __name__ == "__main__":
     app.run(debug=True)
