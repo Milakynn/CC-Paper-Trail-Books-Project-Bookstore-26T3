@@ -1,3 +1,7 @@
+// Backend (Flask) address. Change ONLY here when the server moves
+// (Codespace, cloud VM, etc.).
+const API_URL = "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev";
+
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
@@ -12,7 +16,7 @@ if (loginForm) {
         try {
 
             const response = await fetch(
-                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/login",
+                API_URL + "/login",
                 {
                     method: "POST",
                     headers: {
@@ -69,11 +73,17 @@ if (registerForm) {
             const fullName = document.getElementById("fullName").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
 
             console.log("Submitting registration...");
 
             const response = await fetch(
-                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/register",
+                API_URL + "/register",
                 {
                     method: "POST",
                     headers: {
@@ -91,9 +101,15 @@ if (registerForm) {
 
             const data = await response.json();
 
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
+
             localStorage.setItem(
                 "loggedInUser",
                 JSON.stringify({
+                    user_id: data.user_id,
                     full_name: fullName,
                     email: email,
                     role: "customer"
@@ -142,12 +158,39 @@ if (searchInput) {
 
 }
 
-const addToCartBtn = document.getElementById("addToCartBtn");
+// Book details page: bookDetails.html?id=1
+const bookDetails = document.getElementById("bookDetails");
 
-if (addToCartBtn) {
-    addToCartBtn.addEventListener("click", () => {
-        alert("Book added to cart!");
-    });
+if (bookDetails) {
+
+    const bookId = Number(new URLSearchParams(window.location.search).get("id"));
+
+    fetch(API_URL + "/books")
+        .then(response => response.json())
+        .then(books => {
+
+            const book = books.find(b => b.book_id === bookId);
+
+            if (!book) {
+                document.getElementById("detailTitle").textContent = "Book not found";
+                return;
+            }
+
+            document.getElementById("detailTitle").textContent = book.title;
+            document.getElementById("detailAuthor").textContent = book.author;
+            document.getElementById("detailCategory").textContent = book.category;
+            document.getElementById("detailPrice").textContent = `$${book.price}`;
+            document.getElementById("detailStock").textContent =
+                book.stock_quantity > 0 ? "Available" : "Out of stock";
+            document.getElementById("detailDescription").textContent =
+                book.description || "No description available.";
+
+            document.getElementById("addToCartBtn")
+                .addEventListener("click", () => addToCart(book.book_id));
+
+        })
+        .catch(error => console.error(error));
+
 }
 
 const checkoutBtn = document.getElementById("checkoutBtn");
@@ -163,8 +206,14 @@ if (checkoutBtn) {
                     localStorage.getItem("loggedInUser")
                 );
 
+            if (!user) {
+                alert("Please login first.");
+                window.location.href = "login.html";
+                return;
+            }
+
             const response = await fetch(
-                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/checkout",
+                API_URL + "/checkout",
                 {
                     method: "POST",
                     headers: {
@@ -209,7 +258,7 @@ if (editProfileBtn) {
             if (!newEmail) return;
 
             const response = await fetch(
-                `https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/update-profile/${user.user_id}`,
+                `${API_URL}/update-profile/${user.user_id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -305,7 +354,7 @@ const booksContainer = document.getElementById("booksContainer");
 
 if (booksContainer) {
 
-    fetch("https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/books")
+    fetch(API_URL + "/books")
         .then((response) => response.json())
         .then((books) => {
 
@@ -317,7 +366,11 @@ if (booksContainer) {
                 card.className = "book-card";
 
                 const title = document.createElement("h3");
-                title.textContent = book.title;
+
+                const titleLink = document.createElement("a");
+                titleLink.href = `bookDetails.html?id=${book.book_id}`;
+                titleLink.textContent = book.title;
+                title.appendChild(titleLink);
 
                 const author = document.createElement("p");
                 author.textContent = `Author: ${book.author}`;
@@ -377,7 +430,7 @@ if (addBookForm) {
                 document.getElementById("price").value;
 
             const response = await fetch(
-                "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/add-book",
+                API_URL + "/add-book",
                 {
                     method: "POST",
                     headers: {
@@ -426,7 +479,7 @@ const adminBooksTable = document.getElementById("adminBooksTable");
 
 if (adminBooksTable) {
 
-    fetch("https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/books")
+    fetch(API_URL + "/books")
         .then(response => response.json())
         .then(books => {
 
@@ -496,7 +549,7 @@ async function deleteBook(bookId) {
     }
 
     const response = await fetch(
-        `https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/delete-book/${bookId}`,
+        `${API_URL}/delete-book/${bookId}`,
         {
             method: "DELETE"
         }
@@ -533,7 +586,7 @@ async function editBook(book) {
     if (!newPrice) return;
 
     const response = await fetch(
-        `https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/update-book/${book.book_id}`,
+        `${API_URL}/update-book/${book.book_id}`,
         {
             method: "PUT",
             headers: {
@@ -575,7 +628,7 @@ async function addToCart(bookId) {
     }
 
     const response = await fetch(
-        "https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/add-to-cart",
+        API_URL + "/add-to-cart",
         {
             method: "POST",
             headers: {
@@ -596,15 +649,22 @@ async function addToCart(bookId) {
 
 const cartTableBody = document.getElementById("cartTableBody");
 
-if (cartTableBody) {
+const cartUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-    const user =
-        JSON.parse(
-            localStorage.getItem("loggedInUser")
-        );
+if (cartTableBody && !cartUser) {
+
+    alert("Please login first.");
+
+    window.location.href = "login.html";
+
+}
+
+if (cartTableBody && cartUser) {
+
+    const user = cartUser;
 
     fetch(
-        `https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/cart/${user.user_id}`
+        `${API_URL}/cart/${user.user_id}`
     )
 
     .then(response => response.json())

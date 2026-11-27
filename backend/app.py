@@ -64,18 +64,28 @@ def register():
     VALUES(%s, %s, %s)
     """
 
-    cursor.execute(
-        sql,
-        (full_name, email, password)
-    )
+    try:
+        cursor.execute(
+            sql,
+            (full_name, email, password)
+        )
+    except mysql.connector.IntegrityError:
+        cursor.close()
+        connection.close()
+        return jsonify({
+            "message": "This email is already registered"
+        }), 400
 
     connection.commit()
+
+    user_id = cursor.lastrowid
 
     cursor.close()
     connection.close()
 
     return jsonify({
-        "message": "User registered successfully"
+        "message": "User registered successfully",
+        "user_id": user_id
     })
 
 @app.route("/login", methods=["POST"])

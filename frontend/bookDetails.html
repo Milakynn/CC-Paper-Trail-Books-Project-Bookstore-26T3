@@ -29,29 +29,27 @@
 
         <main>
 
-            <section class="details-container">
+            <section class="details-container" id="bookDetails">
 
                 <div class="book-image">
-                    <img src="https://via.placeholder.com/250x350" alt="Book Cover">
+                    <img src="https://placehold.co/250x350?text=Book+Cover" alt="Book Cover">
                 </div>
 
                 <div class="book-info">
 
-                    <h2>The Great Gatsby</h2>
+                    <h2 id="detailTitle">Loading...</h2>
 
-                    <p><strong>Author:</strong> F. Scott Fitzgerald</p>
+                    <p><strong>Author:</strong> <span id="detailAuthor"></span></p>
 
-                    <p><strong>Category:</strong> Classic Fiction</p>
+                    <p><strong>Category:</strong> <span id="detailCategory"></span></p>
 
-                    <p><strong>Price:</strong> $19.99</p>
+                    <p><strong>Price:</strong> <span id="detailPrice"></span></p>
 
-                    <p><strong>Stock:</strong> Available</p>
+                    <p><strong>Stock:</strong> <span id="detailStock"></span></p>
 
                     <p>
                         <strong>Description:</strong>
-                        The Great Gatsby follows the mysterious millionaire
-                        Jay Gatsby and his obsession with Daisy Buchanan,
-                        exploring themes of wealth, love, and the American Dream.
+                        <span id="detailDescription"></span>
                     </p>
 
                     <button id="addToCartBtn">

@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS paper_trail_books;
+CREATE DATABASE IF NOT EXISTS paper_trail_books
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
