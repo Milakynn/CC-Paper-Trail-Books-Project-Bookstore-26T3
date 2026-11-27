@@ -191,45 +191,56 @@ const editProfileBtn = document.getElementById("editProfileBtn");
 
 if (editProfileBtn) {
 
-    editProfileBtn.addEventListener("click", () => {
+    editProfileBtn.addEventListener(
+        "click",
+        async () => {
 
-        const user =
-            JSON.parse(
-                localStorage.getItem("loggedInUser")
+            const user =
+                JSON.parse(
+                    localStorage.getItem("loggedInUser")
+                );
+
+            const newName = prompt("Enter your new name:", user.full_name);
+
+            if (!newName) return;
+
+            const newEmail = prompt("Enter your new email:", user.email);
+
+            if (!newEmail) return;
+
+            const response = await fetch(
+                `https://obscure-broccoli-5g74w94x4g9f4r9r-5000.app.github.dev/update-profile/${user.user_id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        full_name: newName,
+                        email: newEmail
+                    })
+                }
             );
 
-        const newName =
-            prompt(
-                "Enter your new name:",
-                user.full_name
+            const data = await response.json();
+
+            user.full_name = newName;
+            user.email = newEmail;
+
+            localStorage.setItem(
+                "loggedInUser",
+                JSON.stringify(user)
             );
 
-        if (!newName) {
-            return;
+            document.getElementById("profileName").textContent = newName;
+
+            document.getElementById("profileEmail").textContent = newEmail;
+
+            alert(data.message);
+
         }
+    );
 
-        user.full_name = newName;
-
-        localStorage.setItem(
-            "loggedInUser",
-            JSON.stringify(user)
-        );
-
-        document.getElementById("profileName").textContent =
-            newName;
-
-        alert("Profile updated successfully");
-
-    });
-
-}
-
-const addBookBtn = document.getElementById("addBookBtn");
-
-if (addBookBtn) {
-    addBookBtn.addEventListener("click", () => {
-        alert("Add Book functionality will be connected later.");
-    });
 }
 
 const profileName = document.getElementById("profileName");
@@ -317,16 +328,17 @@ if (booksContainer) {
                 const price = document.createElement("p");
                 price.textContent = `$${book.price}`;
 
-                const button = document.createElement("button");
-                button.textContent = "Add to Cart";
+                const addbutton = document.createElement("button");
+                addbutton.textContent = "Add to Cart";
+                addbutton.className = "add-btn";
 
-                button.addEventListener("click", () => addToCart(book.book_id));
+                addbutton.addEventListener("click", () => addToCart(book.book_id));
 
                 card.appendChild(title);
                 card.appendChild(author);
                 card.appendChild(category);
                 card.appendChild(price);
-                card.appendChild(button);
+                card.appendChild(addbutton);
 
                 booksContainer.appendChild(card);
 
@@ -383,6 +395,8 @@ if (addBookForm) {
             const data = await response.json();
 
             alert(data.message);
+
+            location.reload();
 
         }
     );

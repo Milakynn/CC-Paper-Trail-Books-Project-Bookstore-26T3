@@ -335,5 +335,42 @@ def checkout():
         "order_id": order_id
     })
 
+@app.route("/update-profile/<int:user_id>", methods=["PUT"])
+def update_profile(user_id):
+
+    data = request.get_json()
+
+    full_name = data["full_name"]
+    email = data["email"]
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    sql = """
+    UPDATE users
+    SET
+        full_name = %s,
+        email = %s
+    WHERE user_id = %s
+    """
+
+    cursor.execute(
+        sql,
+        (
+            full_name,
+            email,
+            user_id
+        )
+    )
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify({
+        "message": "Profile updated successfully"
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)

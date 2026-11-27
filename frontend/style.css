@@ -136,6 +136,11 @@ nav a:hover {
     border-radius: 6px;
 }
 
+.add-button {
+    background-color: #1d4ed8;
+    color: white;
+}
+
 /* this is for bookDetails.html */
 .details-container {
     display: flex;
